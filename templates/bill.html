@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .bill-container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .bill-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container bill-container mt-3">
+        <hr>
+        <h4 class="mb-4"><u>Bill Details</u></h4>
+        <p><strong>Bill ID:</strong> {{ sold_item.bill_id }}</p>
+        <p><strong>Date Sold:</strong> {{ sold_item.date_sold }}</p>
+        <p><strong>Buyer's Name:</strong> {{ sold_item.buyer_name }}</p>
+        <hr>
+        <h4 class="mb-4"><u>Product Details</u></h4>
+        <p><strong>Product ID:</strong> {{ sold_item.product_id }}</p>
+        <p><strong>Product Name:</strong> {{ sold_item.product_name }}</p>
+        <p><strong>Quantity Sold:</strong> {{ sold_item.quantity_sold }}</p>
+        <p><strong>Price per unit:</strong> ₹ {{ sold_item.price }}</p>
+        <p><strong>Price Total:</strong> ₹ {{ sold_item.order_total }}</p>
+        <p><strong>GST (18%):</strong> ₹ {{ sold_item.order_total * 0.18 }}</p>
+        <p><strong>Price Total incl. GST:</strong> <b>₹ {{ sold_item.order_total * 1.18 }} /-</b></p>
+        <hr>
+        <div class="text-center">
+            <p class="mb-0"><strong>Thank you for shopping with us!</strong></p>
+            <p class="mb-0">Visit again soon!</p>
+        </div>
+    </div>
+    <div class="d-flex justify-content-between col-md-6 offset-md-3">
+        <a href="{{ url_for('sell_history') }}" class="btn btn-secondary">Back to Sell History</a>
+        <a href="{{ url_for('pdf_bill', bill_id=sold_item.bill_id) }}"target="_blank class=btn btn-primary">Download Bill</a>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

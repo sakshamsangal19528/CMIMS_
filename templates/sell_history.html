@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sold products</title>
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Additional CSS to make flash messages smaller */
+        .alert {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Side Navigation -->
+            <nav class="col-md-2 bg-dark sidebar position-fixed vh-100">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('profile') }}">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('products') }}">Products</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('products_history') }}">Products History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('cashier') }}">Cashier</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('sell_history') }}">Sell History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('balance_report') }}">Balance Report</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/logout">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ml-md-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Welcome {{ username }}, History of all the sold products is listed here.</h1>
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <ul class="list-unstyled">
+                                {% for message in messages %}
+                                    <li class="alert alert-success">{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+
+                <!-- Table to display products -->
+                <div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Product Name</th>
+                <th>Quantity Sold</th>
+                <th>Price per unit</th>
+                <th>Order Total ₹</th>
+                <th>Date Sold</th>
+                <th>Buyer's Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sold_item in sold_items %}
+                <tr>
+                    <td>{{ sold_item.product_id }}</td>
+                    <td>{{ sold_item.product_name }}</td>
+                    <td>{{ sold_item.quantity_sold }}</td>
+                    <td>{{ sold_item.price }}</td>
+                    <td>₹ {{ sold_item.order_total }}</td>
+                    <td>{{ sold_item.date_sold }}</td>
+                    <td>{{ sold_item.buyer_name }}</td>
+                    <td>
+                        <form action="{{ url_for('generate_bill', bill_id=sold_item.bill_id) }}" method="post">
+                            <button type="submit" class="btn btn-primary">Generate Bill</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add Bootstrap JS and Popper.js scripts at the end of the body -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

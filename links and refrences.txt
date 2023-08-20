@@ -1,0 +1,435 @@
+https://youtu.be/7Amej-clP-c
+
+
+
+
+
+this is dashboard html with newest bootstrap and working flash messages
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
+    <style>
+    /* Additional CSS to make flash messages smaller */
+    .alert {
+        padding: 1rem 1rem;
+        font-size: 0.85rem;
+    }
+    .alert-dismissible {
+        padding-right: 3.25rem;
+    }
+
+    /* Colored boxes for statistics */
+    .stat-box {
+        padding: 20px ;
+        margin-bottom: 20px;
+        border: 2px solid #ffffff; /* Add border */
+    }
+
+    .total-products {
+        background-color: #17a2b8; /* Info color */
+    }
+
+    .low-stock-products {
+        background-color: #ffc107; /* Warning color */
+    }
+
+    .most-stock-product {
+        background-color: #28a745; /* Success color */
+    }
+
+    .least-stock-product {
+        background-color: #dc3545; /* Danger color */
+    }
+
+    .out-of-stock-products {
+        background-color: #6c757d; /* Secondary color */
+    }
+</style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Side Navigation -->
+            <nav class="col-md-2 bg-dark sidebar position-fixed vh-100">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('profile') }}">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('products') }}">Products</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('products_history') }}">Products History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('cashier') }}">Cashier</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('sell_history') }}">Sell History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('location') }}">Location</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#">Balance Report</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/logout">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ml-md-auto col-lg-10 px-md-4" style="padding-top: 1rem; margin-left: 250px;">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Welcome {{ username }}, This is your Dashboard</h1>
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-primary alert-dismissible fade show" role="alert">{{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                    <script>
+                        setTimeout(function() {
+                        $(".alert").alert("close");
+                        }, 5000);
+                    </script>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+
+                <!-- Colored boxes for statistics -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stat-box total-products">
+                            Total Products: {{ total_products_2 }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box low-stock-products">
+                            Low Stock Products: {{ low_stock_products_2 }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box most-stock-product">
+                            Most Stock Product: {{ most_stock_product_2.product }} ({{ most_stock_product_2.quantity }} units)
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box least-stock-product">
+                            Least Stock Product: {{ least_stock_product_2.product }} ({{ least_stock_product_2.quantity }} units)
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box out-of-stock-products">
+                            Out of Stock Products: {{ out_of_stock_products_2 }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tables for statistics -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <h3>Total Products</h3>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Product Name</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in total_products %}
+                                    <tr>
+                                        <td>{{ product.product_id }}</td>
+                                        <td>{{ product.product }}</td>
+                                        <td>{{ product.quantity }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-4">
+                        <h3>Low Stock Products</h3>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Product Name</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in low_stock_products %}
+                                    <tr>
+                                        <td>{{ product.product_id }}</td>
+                                        <td>{{ product.product }}</td>
+                                        <td>{{ product.quantity }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-4">
+                        <h3>Out of Stock Products</h3>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Product Name</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in out_of_stock_products %}
+                                    <tr>
+                                        <td>{{ product.product_id }}</td>
+                                        <td>{{ product.product }}</td>
+                                        <td>{{ product.quantity }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add Bootstrap JS and Popper.js scripts at the end of the body -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+
+
+
+
+this is not working flash wala code but ismai sidebar looks good
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <!-- Add Bootstrap CSS link -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+    /* Additional CSS to make flash messages smaller */
+    .alert {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    /* Colored boxes for statistics */
+    .stat-box {
+        padding: 20px ;
+        margin-bottom: 20px;
+        border: 2px solid #ffffff; /* Add border */
+    }
+
+    .total-products {
+        background-color: #17a2b8; /* Info color */
+    }
+
+    .low-stock-products {
+        background-color: #ffc107; /* Warning color */
+    }
+
+    .most-stock-product {
+        background-color: #28a745; /* Success color */
+    }
+
+    .least-stock-product {
+        background-color: #dc3545; /* Danger color */
+    }
+
+    .out-of-stock-products {
+        background-color: #6c757d; /* Secondary color */
+    }
+    .col-md-2{
+        padding-top: 30px;
+        }
+    .nav-item{
+        padding-bottom:10px;
+        }
+    a:hover, a:active {
+        background-color: black;
+        color: white;
+        }
+</style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Side Navigation -->
+            <nav class="col-md-2 bg-info sidebar position-fixed vh-100">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('profile') }}">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('products') }}">Products</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('products_history') }}">Products History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('cashier') }}">Cashier</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('sell_history') }}">Sell History</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{{ url_for('location') }}">Location</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="#">Balance Report</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="/logout">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ml-md-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Welcome {{ username }}, This is your Dashboard</h1>
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <ul class="list-unstyled">
+                                {% for message in messages %}
+                                    <li class="alert alert-success">{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+
+                <!-- Colored boxes for statistics -->
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="stat-box total-products">
+                            Total Products: {{ total_products_2 }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box low-stock-products">
+                            Low Stock Products: {{ low_stock_products_2 }}
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box most-stock-product">
+                            Most Stock Product: {{ most_stock_product_2.product }} ({{ most_stock_product_2.quantity }} units)
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box least-stock-product">
+                            Least Stock Product: {{ least_stock_product_2.product }} ({{ least_stock_product_2.quantity }} units)
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-box out-of-stock-products">
+                            Out of Stock Products: {{ out_of_stock_products_2 }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tables for statistics -->
+                <div class="row">
+                    <div class="col-md-4">
+                        <h3>Total Products</h3>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Product Name</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in total_products %}
+                                    <tr>
+                                        <td>{{ product.product_id }}</td>
+                                        <td>{{ product.product }}</td>
+                                        <td>{{ product.quantity }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-4">
+                        <h3>Low Stock Products</h3>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Product Name</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in low_stock_products %}
+                                    <tr>
+                                        <td>{{ product.product_id }}</td>
+                                        <td>{{ product.product }}</td>
+                                        <td>{{ product.quantity }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-4">
+                        <h3>Out of Stock Products</h3>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Product ID</th>
+                                    <th>Product Name</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in out_of_stock_products %}
+                                    <tr>
+                                        <td>{{ product.product_id }}</td>
+                                        <td>{{ product.product }}</td>
+                                        <td>{{ product.quantity }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add Bootstrap JS and Popper.js scripts at the end of the body -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
