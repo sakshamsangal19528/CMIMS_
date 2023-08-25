@@ -1,4 +1,4 @@
-# CMIMS_
+# CMIMS_ (cashier management and inventory management system)
 
 This project is a web application built using Flask that serves as an inventory management and sales tracking system. It allows users to register, log in, and manage products, as well as track sales and generate PDF bills. The application utilizes SQLAlchemy for database management, Werkzeug for password hashing, and Plotly for interactive sales reports. Additionally, Bootstrap is used to enhance the user interface.
 
