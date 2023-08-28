@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Website{% endblock %}</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <!-- Include any additional CSS files -->
+    <style>
+    {% block styles %} {% endblock %}
+html::-webkit-scrollbar {
+    display: none;
+}
+        .content{
+font-family: monospace;
+}
+        .navbar-nav .nav-link.active {
+        background-color: #343a40; /* Change this to your desired active link background color */
+    }
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{url_for('my_website')}}">My Website</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('dashboard')}}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('profile')}}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('products')}}">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('products_history')}}">Products History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('cashier')}}">Cashier</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('sell_history')}}">Sell History</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('balance_report')}}">Balance Report</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{url_for('logout')}}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+{% block message %} {% endblock %}
+
+
+
+<div class="container mt-4">
+    {% block content %}{% endblock %}
+</div>
+    <!-- Include Bootstrap JS (optional, you can place this at the end of the body as well) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Include any additional JS files -->
+    {% block scripts %}{% endblock %}
+<script>
+    // Get the current URL path
+    var path = window.location.pathname;
+
+    // Get all the navigation links
+    var navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+
+    // Loop through the navigation links
+    navLinks.forEach(function(link) {
+        // Get the link's href attribute
+        var linkPath = link.getAttribute('href');
+
+        // Check if the current URL path matches the link's href
+        if (linkPath === path) {
+            // Add the 'active' class to the active link
+            link.classList.add('active');
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+
+{% block title %}My Website
+{% endblock %}
+
+{% block styles %}
+.content{
+font-family: monospace;
+}
+{% endblock %}
+
+{% block message %}
+{% endblock %}
+
+{% block content %}
+<div class="content">
+<h1>This page contains the working of this project</h1>
+    <hr>
+<p>
+    This project is a Flask application code that implements a simple inventory management system. The system includes functionalities for user registration, login, product management, sales history, generating bills, and generating balance reports using Plotly for data visualization. Here's an overview of the key components and functionalities of the code:
+</p>
+    <ol>
+        <li>
+            <b>Imports:</b> The code starts with importing various libraries and modules required for the application, such as Flask, SQLAlchemy, pdfkit, and Plotly.
+        </li>
+        <li>
+            <b>Database Models:</b> The code defines SQLAlchemy models for different tables in the database, including <b> Product</b>, <b>Product_history</b>, <b>User</b>, and <b>SoldItem.</b>
+        </li>
+        <li>
+            <b>Decorators and Helper Functions:</b>
+            <ul>
+                <li>
+                    <b>admin_required:</b> A decorator that restricts access to certain routes to only users with the 'admin' user type.
+                </li>
+                <li>
+                    <b>unique_bill_id:</b> A function to generate unique bill IDs for sold items.
+                </li>
+                <li>
+                    <b>update_product_history:</b> A function to update the product history when a product is edited.
+                </li>
+            </ul>
+        </li>
+        <li>
+            <b>Routes and Views:</b>
+            <ul>
+    <li><strong>/:</strong> Home page route that renders the "home.html" template.</li>
+    <li><strong>/register:</strong> Handles user registration, hashing passwords, and adding users to the database.</li>
+    <li><strong>/login:</strong> Handles user login and session management.</li>
+    <li><strong>/my_website:</strong> Renders the "my_website.html" template.</li>
+    <li><strong>/profile:</strong> Handles product addition and displays the user's profile page.</li>
+    <li><strong>/dashboard:</strong> Displays statistics and information about products in the inventory.</li>
+    <li><strong>/edit/&lt;int:product_id&gt;:</strong> Handles editing a product's details.</li>
+    <li><strong>/delete/&lt;int:product_id&gt;:</strong> Handles deleting a product.</li>
+    <li><strong>/products and /products_history:</strong> Display product and product history lists.</li>
+    <li><strong>/cashier:</strong> Handles the selling of products to customers.</li>
+    <li><strong>/sell_history:</strong> Displays a history of sold items.</li>
+    <li><strong>/generate_bill/&lt;string:bill_id&gt;:</strong> Generates an HTML bill template for a sold item.</li>
+    <li><strong>/pdf_bill/&lt;string:bill_id&gt;:</strong> Generates a PDF bill for a sold item.</li>
+    <li><strong>/balance_report:</strong> Generates a balance report using Plotly for data visualization.</li>
+    <li><strong>/logout:</strong> Logs the user out and redirects to the login page.</li>
+</ul>
+
+        </li>
+        <li>
+            <strong>App Initialization and Database Creation:</strong>
+            <ul>
+                <li>The application is initialized using the Flask app instance.</li>
+                <li>The SQLAlchemy database models are created and updated.</li>
+            </ul>
+        </li>
+        <li>
+            <strong>Running the App:</strong>
+            <ul>
+                <li>The app is run in debug mode if the script is executed directly.</li>
+            </ul>
+        </li>
+    </ol>
+    the app is upoloaded on github at <a href="https://github.com/sakshamsangal19528/CMIMS_"> https://github.com/sakshamsangal19528/CMIMS_ </a><br>
+    and is also hosted on render @ <a href="https://cmims.onrender.com">https://cmims.onrender.com</a> it takes some time for this link to open so...have some patience.
+</div>
+<br>
+<br>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

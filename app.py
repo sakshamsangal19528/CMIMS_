@@ -12,13 +12,14 @@ from plotly.subplots import make_subplots
 current_directory = os.path.dirname(os.path.abspath(__file__))
 wkhtmltopdf_path = os.path.join(current_directory, 'wkhtmltopdf', 'bin', 'wkhtmltopdf.exe')
 pdfkit_config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
-
-# pdfkit_config = pdfkit.configuration(wkhtmltopdf='C:/Users/saksh/Desktop/flask project 3/wkhtmltopdf/bin/wkhtmltopdf.exe')
+# pdfkit_config = pdfkit.configuration(wkhtmltopdf='C:/Users/saksh/Desktop/flask project
+# 3/wkhtmltopdf/bin/wkhtmltopdf.exe')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_hex(16)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.root_path, 'mydatabase.db')
 db = SQLAlchemy(app)
+
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -30,6 +31,7 @@ class Product(db.Model):
     date_added = db.Column(db.String(255), nullable=False)
     date_updated = db.Column(db.String(255), nullable=True)
 
+
 class Product_history(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.String(255), nullable=False)
@@ -40,12 +42,14 @@ class Product_history(db.Model):
     date_added = db.Column(db.String(255), nullable=False)
     date_updated = db.Column(db.String(255), nullable=False)
 
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
     user_type = db.Column(db.String(20), nullable=False, default='regular')
+
 
 class SoldItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -58,6 +62,7 @@ class SoldItem(db.Model):
     buyer_name = db.Column(db.String(255), nullable=False)
     bill_id = db.Column(db.String(255), nullable=False)
 
+
 def admin_required(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
@@ -69,14 +74,32 @@ def admin_required(func):
         return redirect(url_for('dashboard'))
     return decorated_function
 
+
 def unique_bill_id():
-    unique_id=secrets.token_hex(4).upper()
-    date_time=datetime.now().strftime("%Y%m%d%H%M%S")
+    unique_id = secrets.token_hex(4).upper()
+    date_time = datetime.now().strftime("%Y%m%d%H%M%S")
     return unique_id+date_time
+
+
+def update_product_history(product_id, new_product_id, new_product_name, new_quantity,
+                           new_price, new_location, new_date_added, new_date_updated):
+    existing_product_history = Product_history.query.filter_by(product_id=product_id).first()
+
+    if existing_product_history:
+        existing_product_history.product_id = new_product_id
+        existing_product_history.product = new_product_name
+        existing_product_history.quantity = new_quantity
+        existing_product_history.price = new_price
+        existing_product_history.location = new_location
+        existing_product_history.date_added = new_date_added
+        existing_product_history.date_updated = new_date_updated
+        db.session.commit()
+
 
 @app.route("/")
 def home():
     return render_template("home.html")
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -108,6 +131,7 @@ def register():
             print(str(e))
     return render_template('register.html')
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -128,6 +152,12 @@ def login():
             flash("Login failed. Please try again.", "error")
             print(str(e))
     return render_template('login.html')
+
+
+@app.route("/my_website")
+def my_website():
+    return render_template("my_website.html")
+
 
 @app.route("/profile", methods=['GET', 'POST'])
 @admin_required
@@ -179,31 +209,45 @@ def profile():
     flash("You are not logged in. Please log in to access your profile.", "error")
     return redirect(url_for('login'))
 
-@app.route("/logout")
-def logout():
-    session.pop("user_id", None)
-    flash("Logged out successfully.", "success")
-    return redirect("/login")
+@app.route('/dashboard', methods=['GET', 'POST'])
+def dashboard():
+    user_id = session.get("user_id")
+    if user_id:
+        user = User.query.get(user_id)
+        if user:
 
-def update_product_history(product_id, new_product_id, new_product_name, new_quantity,
-                           new_price, new_location, new_date_added, new_date_updated):
-    existing_product_history = Product_history.query.filter_by(product_id=product_id).first()
+            # Calculate statistics for colored boxes
+            total_products_count_2 = Product.query.count()
+            low_stock_products_2 = Product.query.filter(Product.quantity <= 10).count()
 
-    if existing_product_history:
-        existing_product_history.product_id = new_product_id
-        existing_product_history.product = new_product_name
-        existing_product_history.quantity = new_quantity
-        existing_product_history.price = new_price
-        existing_product_history.location = new_location
-        existing_product_history.date_added = new_date_added
-        existing_product_history.date_updated = new_date_updated
-        db.session.commit()
+            most_stock_product_2 = Product.query.order_by(Product.quantity.desc()).first()
+            least_stock_product_2 = Product.query.order_by(Product.quantity).first()
+            out_of_stock_products_2 = Product.query.filter(Product.quantity == 0).count()
 
-def Unique_bill_id():
-    unique_id=secrets.token_hex(4).upper()
-    date_time=datetime.now().strftime("%Y%m%d%H%M%S")
-    return unique_id + date_time
+            # Calculate statistics
+            total_products = Product.query.all()  # Get all products
+            low_stock_products = Product.query.filter(Product.quantity <= 10).all()  # Get low stock products
 
+            most_stock_product = Product.query.order_by(Product.quantity.desc()).first()
+            least_stock_product = Product.query.order_by(Product.quantity).first()
+
+            out_of_stock_products = Product.query.filter(Product.quantity == 0).all()  # Get out of stock products
+
+            return render_template("dashboard.html", username=user.username,
+                                   total_products_2=total_products_count_2,
+                                   low_stock_products_2=low_stock_products_2,
+                                   most_stock_product_2=most_stock_product_2,
+                                   least_stock_product_2=least_stock_product_2,
+                                   out_of_stock_products_2=out_of_stock_products_2,
+
+                                   total_products=total_products,
+                                   low_stock_products=low_stock_products,
+                                   most_stock_product=most_stock_product,
+                                   least_stock_product=least_stock_product,
+                                   out_of_stock_products=out_of_stock_products
+                                   )
+    flash("You are not logged in. Please log in to access your profile.", "error")
+    return redirect(url_for('login'))
 
 
 @app.route('/edit/<int:product_id>', methods=['GET', 'POST'])
@@ -246,7 +290,6 @@ def edit_product(product_id):
     return render_template('edit_product.html', product=product)
 
 
-
 @app.route('/delete/<int:product_id>', methods=['GET', 'POST'])
 def delete_product(product_id):
     product = Product.query.get_or_404(product_id)
@@ -258,48 +301,6 @@ def delete_product(product_id):
         return redirect(url_for('profile'))
 
     return render_template('delete_product.html', product=product)
-
-@app.route('/dashboard', methods=['GET', 'POST'])
-def dashboard():
-    user_id = session.get("user_id")
-    if user_id:
-        user = User.query.get(user_id)
-        if user:
-            flash("Logged in successfully", "success")
-
-            # Calculate statistics for colored boxes
-            total_products_count_2 = Product.query.count()
-            low_stock_products_2 = Product.query.filter(Product.quantity <= 10).count()
-
-            most_stock_product_2 = Product.query.order_by(Product.quantity.desc()).first()
-            least_stock_product_2 = Product.query.order_by(Product.quantity).first()
-            out_of_stock_products_2 = Product.query.filter(Product.quantity == 0).count()
-
-            # Calculate statistics
-            total_products = Product.query.all()  # Get all products
-            low_stock_products = Product.query.filter(Product.quantity <= 10).all()  # Get low stock products
-
-            most_stock_product = Product.query.order_by(Product.quantity.desc()).first()
-            least_stock_product = Product.query.order_by(Product.quantity).first()
-
-            out_of_stock_products = Product.query.filter(Product.quantity == 0).all()  # Get out of stock products
-
-            return render_template("dashboard.html", username=user.username,
-                                   total_products_2=total_products_count_2,
-                                   low_stock_products_2=low_stock_products_2,
-                                   most_stock_product_2=most_stock_product_2,
-                                   least_stock_product_2=least_stock_product_2,
-                                   out_of_stock_products_2=out_of_stock_products_2,
-
-                                   total_products=total_products,
-                                   low_stock_products=low_stock_products,
-                                   most_stock_product=most_stock_product,
-                                   least_stock_product=least_stock_product,
-                                   out_of_stock_products=out_of_stock_products
-                                   )
-    flash("You are not logged in. Please log in to access your profile.", "error")
-    return redirect(url_for('login'))
-
 
 
 @app.route('/products', methods=['GET'])
@@ -313,6 +314,7 @@ def products():
     flash("You are not logged in. Please log in to access your profile.", "error")
     return redirect(url_for('login'))
 
+
 @app.route('/products_history', methods=['GET'])
 def products_history():
     user_id = session.get("user_id")
@@ -324,6 +326,7 @@ def products_history():
     flash("You are not logged in. Please log in to access your profile.", "error")
     return redirect(url_for('login'))
 
+
 @app.route('/cashier', methods=['GET', 'POST'])
 def cashier():
     user_id = session.get("user_id")
@@ -334,7 +337,6 @@ def cashier():
                 product_id = request.form['product_id']
                 quantity_sold = int(request.form['quantity_sold'])
                 buyer_name = request.form['buyer_name']  # get the buyers name from here
-
 
                 product = Product.query.filter_by(product_id=product_id).first()
                 if product:
@@ -379,15 +381,29 @@ def sell_history():
     flash("You are not logged in. Please log in to access your profile.", "error")
     return redirect(url_for('login'))
 
+
 @app.route('/generate_bill/<string:bill_id>', methods=['POST'])
 def generate_bill(bill_id):
     sold_item = SoldItem.query.filter_by(bill_id=bill_id).first()
     if sold_item:
+        # Calculate GST and total price including GST
+        gst_amount = sold_item.order_total * 0.18
+        total_price_with_gst = sold_item.order_total + gst_amount
+
+        # Convert the calculated values to string format for template rendering
+        gst_amount_str = "₹ {:.2f}".format(gst_amount)
+        total_price_with_gst_str = "₹ {:.2f} /-".format(total_price_with_gst)
+
+        # Add the calculated values to the sold_item object
+        sold_item.gst_amount = gst_amount_str
+        sold_item.total_price_with_gst = total_price_with_gst_str
+
         rendered = render_template('bill.html', sold_item=sold_item)
         return rendered
     else:
         flash("Sold item not found.", "error")
-    return redirect(url_for('sell_history'))
+        return redirect(url_for('sell_history'))
+
 
 @app.route('/pdf_bill/<string:bill_id>', methods=['GET'])
 def pdf_bill(bill_id):
@@ -405,15 +421,6 @@ def pdf_bill(bill_id):
         flash("Sold item not found.", "error")
         return redirect(url_for('sell_history'))
 
-@app.route('/location')
-def location():
-    user_id = session.get("user_id")
-    if user_id:
-        user = User.query.get(user_id)
-        if user:
-            return render_template("location.html", username=user.username)
-    flash("You are not logged in. Please log in to access your profile.", "error")
-    return redirect(url_for('login'))
 
 @app.route('/balance_report')
 def balance_report():
@@ -432,11 +439,6 @@ def balance_report():
             scatter_trace = go.Scatter(x=dates_sold, y=quantities_sold, mode='markers+text', text=product_names,
                                        marker=dict(color='blue'))
 
-            # Create layout for the scatter plot
-            scatter_layout = go.Layout(title="Product Sales Report",
-                                       xaxis=dict(title="Date Sold"),
-                                       yaxis=dict(title="Quantity Sold"))
-
             # Create a subplot with the scatter plot
             fig = make_subplots(rows=1, cols=1, subplot_titles=("Product Sales Report",))
             fig.add_trace(scatter_trace, row=1, col=1)
@@ -451,6 +453,14 @@ def balance_report():
             return render_template("balance_report.html", username=user.username, graph_html=graph_html)
     flash("You are not logged in. Please log in to access your profile.", "error")
     return redirect(url_for('login'))
+
+
+@app.route("/logout")
+def logout():
+    session.pop("user_id", None)
+    flash("Logged out successfully.", "success")
+    return redirect("/login")
+
 
 if __name__ == "__main__":
     with app.app_context():

@@ -1,199 +1,189 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <!-- Add Bootstrap CSS link -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-    /* Additional CSS to make flash messages smaller */
-    .alert {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.85rem;
-    }
+{% extends "base.html" %}
 
-    /* Colored boxes for statistics */
-    .stat-box {
-        padding: 20px ;
-        margin-bottom: 20px;
-        border: 2px solid #ffffff; /* Add border */
-    }
+{% block title %}
+Dashboard
+{% endblock %}
 
-    .total-products {
-        background-color: #17a2b8; /* Info color */
-    }
+{% block styles %}
+ul {
+    display: block;
+    list-style-type: none;
+    margin-block-start: 0em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 10px;
+}
 
-    .low-stock-products {
-        background-color: #ffc107; /* Warning color */
-    }
+/* Colored boxes for statistics */
+.stat-box {
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 2px solid #ffffff; /* Add border */
+}
 
-    .most-stock-product {
-        background-color: #28a745; /* Success color */
-    }
+.total-products {
+    background-color: #17a2b8; /* Info color */
+}
 
-    .least-stock-product {
-        background-color: #dc3545; /* Danger color */
-    }
+.low-stock-products {
+    background-color: #ffc107; /* Warning color */
+}
 
-    .out-of-stock-products {
-        background-color: #6c757d; /* Secondary color */
-    }
-</style>
-</head>
-<body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Side Navigation -->
-            <nav class="col-md-2 bg-dark sidebar position-fixed vh-100">
-                <div class="position-sticky">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('dashboard') }}">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('profile') }}">Profile</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('products') }}">Products</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('products_history') }}">Products History</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('cashier') }}">Cashier</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('sell_history') }}">Sell History</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('balance_report') }}">Balance Report</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/logout">Logout</a>
-                        </li>
+.most-stock-product {
+    background-color: #28a745; /* Success color */
+}
+
+.least-stock-product {
+    background-color: #dc3545; /* Danger color */
+}
+
+.out-of-stock-products {
+    background-color: #6c757d; /* Secondary color */
+}
+{% endblock %}
+
+{% block message %}
+<div class="container fixed-top" style="z-index: 100; margin-top: 60px;">
+    <div class="position-relative">
+        <div class="position-absolute w-100">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="flashes">
+                        {% for message in messages %}
+                            <li class="alert alert-info alert-dismissible fade show">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                {{ message }}
+                            </li>
+                        {% endfor %}
                     </ul>
-                </div>
-            </nav>
-
-            <!-- Main Content -->
-            <main class="col-md-10 ml-md-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Welcome {{ username }}, This is your Dashboard</h1>
-                    {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                            <ul class="list-unstyled">
-                                {% for message in messages %}
-                                    <li class="alert alert-success">{{ message }}</li>
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
-                    {% endwith %}
-                </div>
-
-                <!-- Colored boxes for statistics -->
-
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="stat-box total-products">
-                            Total Products: {{ total_products_2 }}
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="stat-box low-stock-products">
-                            Low Stock Products: {{ low_stock_products_2 }}
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="stat-box most-stock-product">
-                            Most Stock Product: {{ most_stock_product_2.product }} ({{ most_stock_product_2.quantity }} units)
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="stat-box least-stock-product">
-                            Least Stock Product: {{ least_stock_product_2.product }} ({{ least_stock_product_2.quantity }} units)
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="stat-box out-of-stock-products">
-                            Out of Stock Products: {{ out_of_stock_products_2 }}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tables for statistics -->
-                <div class="row">
-                    <div class="col-md-4">
-                        <h3>Total Products</h3>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Product ID</th>
-                                    <th>Product Name</th>
-                                    <th>Quantity</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for product in total_products %}
-                                    <tr>
-                                        <td>{{ product.product_id }}</td>
-                                        <td>{{ product.product }}</td>
-                                        <td>{{ product.quantity }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-md-4">
-                        <h3>Low Stock Products</h3>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Product ID</th>
-                                    <th>Product Name</th>
-                                    <th>Quantity</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for product in low_stock_products %}
-                                    <tr>
-                                        <td>{{ product.product_id }}</td>
-                                        <td>{{ product.product }}</td>
-                                        <td>{{ product.quantity }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-md-4">
-                        <h3>Out of Stock Products</h3>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Product ID</th>
-                                    <th>Product Name</th>
-                                    <th>Quantity</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for product in out_of_stock_products %}
-                                    <tr>
-                                        <td>{{ product.product_id }}</td>
-                                        <td>{{ product.product }}</td>
-                                        <td>{{ product.quantity }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
+                {% endif %}
+            {% endwith %}
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <!-- Add Bootstrap JS and Popper.js scripts at the end of the body -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+{% block content %}
+<div class="content">
+<div style="position: relative; z-index: 0;">
+    <div class="container mt-4">
+        <h1>Welcome {{ username }}. This is your Dashboard.</h1>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="stat-box total-products">
+                Total Products: {{ total_products_2 }}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-box low-stock-products">
+                Low Stock Products: {{ low_stock_products_2 }}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-box most-stock-product">
+                Most Stock Product: {{ most_stock_product_2.product }} ({{ most_stock_product_2.quantity }} units)
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-box least-stock-product">
+                Least Stock Product: {{ least_stock_product_2.product }} ({{ least_stock_product_2.quantity }} units)
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-box out-of-stock-products">
+                Out of Stock Products: {{ out_of_stock_products_2 }}
+            </div>
+        </div>
+    </div>
+    <hr>
+    <!-- Tables for statistics -->
+    <div class="row">
+        <div class="col-md-4">
+            <h3>Total Products</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in total_products %}
+                    <tr>
+                        <td>{{ product.product_id }}</td>
+                        <td>{{ product.product }}</td>
+                        <td>{{ product.quantity }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <h3>Low Stock Products</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in low_stock_products %}
+                    <tr>
+                        <td>{{ product.product_id }}</td>
+                        <td>{{ product.product }}</td>
+                        <td>{{ product.quantity }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <h3>Out of Stock Products</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Product ID</th>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in out_of_stock_products %}
+                    <tr>
+                        <td>{{ product.product_id }}</td>
+                        <td>{{ product.product }}</td>
+                        <td>{{ product.quantity }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Wait for the DOM to load
+    document.addEventListener("DOMContentLoaded", function () {
+        // Select all the flash messages with the "alert-info" class
+        var flashMessages = document.querySelectorAll(".alert.alert-info");
+
+        // Loop through each flash message and set a timeout to remove it
+        flashMessages.forEach(function (flashMessage) {
+            setTimeout(function () {
+                flashMessage.style.opacity = "0"; // Fade out
+                setTimeout(function () {
+                    flashMessage.style.display = "none"; // Hide
+                }, 500); // Wait for the fade-out animation to finish
+            }, 3000); // Set timeout for 3 seconds (3000 milliseconds)
+        });
+    });
+</script>
+{% endblock %}

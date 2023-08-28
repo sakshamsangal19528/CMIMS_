@@ -1,70 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products</title>
-    <!-- Add Bootstrap CSS link -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        /* Additional CSS to make flash messages smaller */
-        .alert {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.85rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Side Navigation -->
-            <nav class="col-md-2 bg-dark sidebar position-fixed vh-100">
-                <div class="position-sticky">
-                    <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('dashboard') }}">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('profile') }}">Profile</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('products') }}">Products</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('products_history') }}">Products History</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('cashier') }}">Cashier</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('sell_history') }}">Sell History</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{{ url_for('balance_report') }}">Balance Report</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="/logout">Logout</a>
-                        </li>
+{% extends "base.html" %}
+
+{% block title %}
+Products
+{% endblock %}
+
+{% block styles %}
+.content{
+font-family: monospace;
+}
+{% endblock %}
+
+{% block message %}
+<div class="container fixed-top" style="z-index: 100; margin-top: 60px;">
+    <div class="position-relative">
+        <div class="position-absolute w-100">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="flashes">
+                        {% for message in messages %}
+                            <li class="alert alert-info alert-dismissible fade show">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                {{ message }}
+                            </li>
+                        {% endfor %}
                     </ul>
-                </div>
-            </nav>
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+</div>
+{% endblock %}
 
-            <!-- Main Content -->
-            <main class="col-md-10 ml-md-auto col-lg-10 px-md-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Welcome {{ username }}, All the products available are listed here.</h1>
-                    {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                            <ul class="list-unstyled">
-                                {% for message in messages %}
-                                    <li class="alert alert-success">{{ message }}</li>
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
-                    {% endwith %}
-                </div>
-
-                <section class="mb-4 content-container">
+{% block content %}
+<div class="content">
+<div style="position: relative; z-index: 0;">
+    <div class="container mt-4">
+        <h1>Welcome {{username}}, All the products available are listed here. </h1>
+    </div>
+    <hr>
+    <section class="mb-4 content-container">
         <div class="table-responsive">
             <table class="table table-bordered">
                 <thead>
@@ -94,12 +68,9 @@
             </table>
         </div>
     </section>
-        </div>
-    </div>
+</div>
+</div>
+{% endblock %}
 
-    <!-- Add Bootstrap JS and Popper.js scripts at the end of the body -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+{% block scripts %}
+{% endblock %}
